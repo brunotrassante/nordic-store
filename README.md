@@ -1,6 +1,6 @@
 # NordicStore
 
-![alt text](https://pbs.twimg.com/profile_images/1607826299/nimitz-floor-N-logo_400x400.gif)
+A bootstrap project, in dotnet core, to show some architectural patterns really useful when building APIs with heavy business rules.
 
 
 ## Architecture Patterns
