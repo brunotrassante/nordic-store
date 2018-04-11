@@ -5,6 +5,7 @@ using NordicStore.Shared.Notifications;
 using NordicStore.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NordicStore.Tests.Handlers
 {
@@ -21,12 +22,12 @@ namespace NordicStore.Tests.Handlers
         }
 
         [TestMethod]
-        public void ShouldReturnNotificationWhenCreatingCustomerWithExistingEmail()
+        public async Task ShouldReturnNotificationWhenCreatingCustomerWithExistingEmail()
         {
             var createCommand = CreateValidCreateCustomerCommand();
             createCommand.Email = "alreadyused@email.com";
 
-            var commandResult = _customerHandler.Handle(createCommand);
+            var commandResult = await _customerHandler.Handle(createCommand);
 
             Assert.IsFalse(commandResult.Success);
             Assert.IsTrue(commandResult.Data is List<Notification>);
@@ -34,12 +35,12 @@ namespace NordicStore.Tests.Handlers
         }
 
         [TestMethod]
-        public void ShouldReturnNotificationWhenCreatingCustomerWithInvalidEmail()
+        public async Task ShouldReturnNotificationWhenCreatingCustomerWithInvalidEmail()
         {
             var createCommand = CreateValidCreateCustomerCommand();
             createCommand.Email = "invalidEmail";
 
-            var commandResult = _customerHandler.Handle(createCommand);
+            var commandResult = await _customerHandler.Handle(createCommand);
 
             Assert.IsFalse(commandResult.Success);
             Assert.IsTrue(commandResult.Data is List<Notification>);
@@ -47,22 +48,22 @@ namespace NordicStore.Tests.Handlers
         }
 
         [TestMethod]
-        public void ShouldCreateUserWhenAllParametersAreRight()
+        public async Task ShouldCreateUserWhenAllParametersAreRight()
         {
             var createCommand = CreateValidCreateCustomerCommand();      
-            var commandResult = _customerHandler.Handle(createCommand);
+            var commandResult = await _customerHandler.Handle(createCommand);
 
             Assert.IsTrue(commandResult.Success);
             Assert.IsTrue(commandResult.Data is int);
         }
 
         [TestMethod]
-        public void ShouldReturnNotificationWhenAddingOrderToInexistentCustomer()
+        public async Task ShouldReturnNotificationWhenAddingOrderToInexistentCustomer()
         {
             var addOrderCommand = CreateValidAddOrderCommand();
             addOrderCommand.CustomerId = 999;
 
-            var commandResult = _customerHandler.Handle(addOrderCommand);
+            var commandResult = await _customerHandler.Handle(addOrderCommand);
 
             Assert.IsFalse(commandResult.Success);
             Assert.IsTrue(commandResult.Data is List<Notification>);
@@ -70,12 +71,12 @@ namespace NordicStore.Tests.Handlers
         }
 
         [TestMethod]
-        public void ShouldReturnNotificationWhenPriceIsInvalid()
+        public async Task ShouldReturnNotificationWhenPriceIsInvalid()
         {
             var addOrderCommand = CreateValidAddOrderCommand();
             addOrderCommand.Price = 0;
 
-            var commandResult = _customerHandler.Handle(addOrderCommand);
+            var commandResult = await _customerHandler.Handle(addOrderCommand);
 
             Assert.IsFalse(commandResult.Success);
             Assert.IsTrue(commandResult.Data is List<Notification>);
@@ -83,11 +84,11 @@ namespace NordicStore.Tests.Handlers
         }
 
         [TestMethod]
-        public void ShouldAddOrderWhenParametersAreRight()
+        public async Task ShouldAddOrderWhenParametersAreRight()
         {
             var addOrderCommand = CreateValidAddOrderCommand();
 
-            var commandResult = _customerHandler.Handle(addOrderCommand);
+            var commandResult = await _customerHandler.Handle(addOrderCommand);
 
             Assert.IsTrue(commandResult.Success);
             Assert.IsTrue(commandResult.Data is int);

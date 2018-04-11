@@ -1,12 +1,13 @@
 ﻿using NordicStore.Domain.Entities;
+using System.Threading.Tasks;
 
 namespace NordicStore.Domain.Repositories
 {
     public interface ICustomerCommandRepository
     {
-        int Create(Customer customer);
-        int AddOrder(int id, Order order);
-        bool IsEmailInUse(string email);
-        bool Exists(int id);
+        Task<int> Create(Customer customer);
+        Task<int> AddOrder(int id, Order order);
+        Task<bool> IsEmailInUse(string email);
+        Task<bool> Exists(int id);
     }
 }

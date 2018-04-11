@@ -5,6 +5,7 @@ using NordicStore.Infra.Queries;
 using NordicStore.Infra.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NordicStore.API.Controllers
 {
@@ -21,23 +22,23 @@ namespace NordicStore.API.Controllers
 
         [HttpGet]
         [Route("v1/customers/{id}")]
-        public CustomerPopulatedQuery Get(int id)
+        public async Task<CustomerPopulatedQuery> Get(int id)
         {
-            return _queryRepository.Get(id);
+            return await _queryRepository.Get(id);
         }
 
         [HttpGet]
         [Route("v1/customers")]
-        public List<CustomerListedQuery> Get()
+        public async Task<List<CustomerListedQuery>> Get()
         {
-            return _queryRepository.GetAll();
+            return await _queryRepository.GetAll();
         }
 
         [HttpPost]
         [Route("v1/customers")]
-        public ActionResult Post([FromBody]CreateCustomerCommand command)
+        public async Task<ActionResult> Post([FromBody]CreateCustomerCommand command)
         {
-            var commandResult = _customerHandler.Handle(command);
+            var commandResult = await _customerHandler.Handle(command);
 
             if (!commandResult.Success)
                 return BadRequest(commandResult.Data);
@@ -47,10 +48,10 @@ namespace NordicStore.API.Controllers
 
         [HttpPost]
         [Route("v1/customers/{customerId}/orders")]
-        public ActionResult Post(int customerId, [FromBody]AddOrderToCustomerCommand command)
+        public async Task<ActionResult> Post(int customerId, [FromBody]AddOrderToCustomerCommand command)
         {
             command.CustomerId = customerId;
-            var commandResult = _customerHandler.Handle(command);
+            var commandResult = await _customerHandler.Handle(command);
 
             if (!commandResult.Success)
                 return BadRequest(commandResult.Data);

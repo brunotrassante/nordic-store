@@ -1,28 +1,29 @@
 ﻿using NordicStore.Domain.Entities;
 using NordicStore.Domain.Repositories;
+using System.Threading.Tasks;
 
 namespace NordicStore.Tests.Mocks
 {
     public class FakeCustomerRepositiry : ICustomerCommandRepository
     {
-        public int AddOrder(int id, Order order)
+        public Task<int> AddOrder(int id, Order order)
         {
-            return 1;
+            return Task.FromResult(1);
         }
 
-        public bool IsEmailInUse(string email)
+        public Task<bool> IsEmailInUse(string email)
         {
-            return email == "alreadyused@email.com";
+            return Task.FromResult(email == "alreadyused@email.com");
         }
 
-        public int Create(Customer customer)
+        public Task<int> Create(Customer customer)
         {
-            return 1;
+            return Task.FromResult(1);
         }
 
-        public bool Exists(int id)
+        public Task<bool> Exists(int id)
         {
-            return id == 1;
+            return Task.FromResult(id == 1);
         }
     }
 }

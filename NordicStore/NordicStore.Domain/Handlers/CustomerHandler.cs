@@ -5,6 +5,7 @@ using NordicStore.Domain.Repositories;
 using NordicStore.Domain.ValueObjects;
 using NordicStore.Shared.Commands;
 using NordicStore.Shared.Notifications;
+using System.Threading.Tasks;
 
 namespace NordicStore.Domain.Handlers
 {
@@ -20,10 +21,9 @@ namespace NordicStore.Domain.Handlers
             _repository = repository;
         }
 
-        public ICommandResult Handle(CreateCustomerCommand command)
+        public async Task<ICommandResult> Handle(CreateCustomerCommand command)
         {
-            if (_repository.IsEmailInUse(command.Email))
-                AddNotification(nameof(command.Email), "This email is already in use.");
+            var isEmailInUse = _repository.IsEmailInUse(command.Email);
 
             var name = new Name(command.FirstName, command.LastName);
             var email = new Email(command.Email);
@@ -33,27 +33,32 @@ namespace NordicStore.Domain.Handlers
             AddNotifications(email.Notifications);
             AddNotifications(customer.Notifications);
 
+            if (await isEmailInUse)
+                AddNotification(nameof(command.Email), "This email is already in use.");
+
             if (!IsValid)
                 return CreateGenericErrorCommandResult();
 
-            int customerId = _repository.Create(customer);
+            int customerId = await _repository.Create(customer);
 
             return new SuccessCommandResult("Customer created.", customerId);
         }
 
-        public ICommandResult Handle(AddOrderToCustomerCommand command)
+        public async Task<ICommandResult> Handle(AddOrderToCustomerCommand command)
         {
-            if (!_repository.Exists(command.CustomerId))
-                AddNotification(nameof(command.CustomerId), "Customer does not exists.");
-
+            var customerExists = _repository.Exists(command.CustomerId);
+          
             var order = new Order(command.Price);
 
             AddNotifications(order.Notifications);
 
+            if (!await customerExists)
+                AddNotification(nameof(command.CustomerId), "Customer does not exists.");
+
             if (!IsValid)
                 return CreateGenericErrorCommandResult();
 
-            int orderId = _repository.AddOrder(command.CustomerId, order);
+            int orderId = await _repository.AddOrder(command.CustomerId, order);
 
             return new SuccessCommandResult("Order successfully added.", orderId);
         }
